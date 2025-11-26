@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+dist/
+build/
+*.log
+.env*
+
+# SQLite
+*.db
+*.sqlite
+
+# Vite
+.vite/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+coverage/
+
+# Misc
+*.tmp
+*.swp
+.idea/
