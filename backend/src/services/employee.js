@@ -10,14 +10,14 @@ module.exports = {
       return;
     }
     db.run(
-      "INSERT INTO employees (name, role, proficiency, last_updated) VALUES (?, ?, ?, ?)",
-      [data.name, data.role, data.proficiency, new Date().toISOString()],
+      "INSERT INTO employees (name, role, proficiency, skills, last_updated) VALUES (?, ?, ?, ?, ?)",
+      [data.name, data.role, data.proficiency, data.skills || "", new Date().toISOString()],
       cb
     );
   },
   update: (id, data, cb) => db.run(
-    "UPDATE employees SET name = ?, role = ?, proficiency = ?, last_updated = datetime('now') WHERE id = ?",
-    [data.name, data.role, data.proficiency, id],
+    "UPDATE employees SET name = ?, role = ?, proficiency = ?, skills = ?, last_updated = datetime('now') WHERE id = ?",
+    [data.name, data.role, data.proficiency, data.skills || "", id],
     cb
   ),
   delete: (id, cb) => db.run("DELETE FROM employees WHERE id = ?", [id], cb)

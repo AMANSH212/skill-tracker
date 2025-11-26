@@ -37,7 +37,10 @@ export async function EmployeePage(root) {
     let filtered = employees.filter(emp => {
       let match = true;
       if (keyword) {
-        match = match && emp.name.toLowerCase().includes(keyword);
+        match = match && (
+          emp.name.toLowerCase().includes(keyword) ||
+          (emp.skills && emp.skills.toLowerCase().includes(keyword))
+        );
       }
       if (proficiency && proficiency !== "all") {
         match = match && emp.proficiency === proficiency;
@@ -90,13 +93,35 @@ export async function EmployeePage(root) {
     filterRole.appendChild(option); // Use the already declared filterRole
   });
 
+  let sortField = null;
+  let sortAsc = true;
+
+  function sortEmployees(employees, field, asc) {
+    return [...employees].sort((a, b) => {
+      if (a[field] == null) return 1;
+      if (b[field] == null) return -1;
+      if (typeof a[field] === "string") {
+        return asc
+          ? a[field].localeCompare(b[field])
+          : b[field].localeCompare(a[field]);
+      }
+      // For dates or numbers
+      return asc ? a[field] - b[field] : b[field] - a[field];
+    });
+  }
+
   function renderTable(filteredEmployees) {
+    let rows = filteredEmployees;
+    if (sortField) {
+      rows = sortEmployees(rows, sortField, sortAsc);
+    }
     const tbody = document.querySelector("#employee-table tbody");
-    tbody.innerHTML = filteredEmployees.map(emp => `
+    tbody.innerHTML = rows.map(emp => `
       <tr>
         <td>${emp.name}</td>
         <td>${emp.role}</td>
         <td>${emp.proficiency || ""}</td>
+        <td>${emp.skills || ""}</td>
         <td>${emp.last_updated || ""}</td>
         <td>
           <button class="edit-btn" data-id="${emp.id}">Edit</button>
@@ -122,6 +147,13 @@ export async function EmployeePage(root) {
         showNotification("Employee deleted", "success");
       };
     });
+    // Highlight active sort icon
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+      icon.classList.toggle('active', icon.dataset.field === sortField);
+      icon.textContent = icon.dataset.field === sortField
+        ? (sortAsc ? '↑' : '↓')
+        : '⇅';
+    });
   }
   renderTable(employees);
 
@@ -133,7 +165,10 @@ export async function EmployeePage(root) {
     let filtered = employees.filter(emp => {
       let match = true;
       if (keyword) {
-        match = match && emp.name.toLowerCase().includes(keyword);
+        match = match && (
+          emp.name.toLowerCase().includes(keyword) ||
+          (emp.skills && emp.skills.toLowerCase().includes(keyword))
+        );
       }
       if (proficiency && proficiency !== "all") {
         match = match && emp.proficiency === proficiency;
@@ -147,35 +182,8 @@ export async function EmployeePage(root) {
   };
 
   // Add Employee button
-  document.getElementById("add-employee-btn").onclick = showAddModal;
+  document.getElementById("add-skills-btn").onclick = showAddModal;
 
-  // Edit/Delete actions
-  tbody.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("edit-btn")) {
-      const emp = employees.find(emp => emp.id == e.target.dataset.id);
-      showEditModal(emp);
-    }
-    if (e.target.classList.contains("delete-btn")) {
-      const emp = employees.find(emp => emp.id == e.target.dataset.id);
-      await api.deleteEmployee(emp.id);
-      employees = await api.getEmployees();
-      tbody.innerHTML = employees.map(emp => `
-        <tr>
-          <td>${emp.name}</td>
-          <td>${emp.role}</td>
-          <td>${emp.proficiency || ""}</td>
-          <td>${emp.last_updated || ""}</td>
-          <td>
-            <button class="edit-btn" data-id="${emp.id}">Edit</button>
-            <button class="delete-btn" data-id="${emp.id}">Delete</button>
-          </td>
-        </tr>
-      `).join("");
-      showNotification("Employee deleted", "success");
-    }
-  });
-
-  // Modal logic
   async function showAddModal() {
     const modalHtml = await fetch("./src/components/EmployeeModal.html").then(r => r.text());
     const modal = document.createElement("div");
@@ -185,11 +193,11 @@ export async function EmployeePage(root) {
     form.onsubmit = async (e) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
-      const result = await api.createEmployee(data);
+      await api.createEmployee(data);
       employees = await api.getEmployees();
       renderTable(employees);
-      updateRoleFilterOptions(employees); // update after add
-      showNotification("Employee added", "success");
+      updateRoleFilterOptions(employees);
+      showNotification("Skills added", "success");
       modal.remove();
     };
     modal.querySelector("#close-modal").onclick = () => modal.remove();
@@ -230,4 +238,18 @@ export async function EmployeePage(root) {
 
   // Initial population after fetching employees
   updateRoleFilterOptions(employees);
+
+  // Add event listeners to sort icons
+  document.querySelectorAll('.sort-icon').forEach(icon => {
+    icon.onclick = () => {
+      const field = icon.dataset.field;
+      if (sortField === field) {
+        sortAsc = !sortAsc;
+      } else {
+        sortField = field;
+        sortAsc = true;
+      }
+      renderTable(employees);
+    };
+  });
 }

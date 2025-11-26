@@ -24,8 +24,8 @@ router.get("/:id", (req, res) => {
 
 // Create employee
 router.post("/", (req, res) => {
-  const { name, role, proficiency } = req.body;
-  employeeService.create({ name, role, proficiency }, function (err) {
+  const { name, role, proficiency, skills } = req.body; // <-- add skills here
+  employeeService.create({ name, role, proficiency, skills }, function (err) {
     if (err) return res.status(500).json({ error: err.message });
     employeeService.getAll((err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -36,8 +36,8 @@ router.post("/", (req, res) => {
 
 // Update employee
 router.put("/:id", (req, res) => {
-  const { name, role, proficiency, last_updated } = req.body;
-  employeeService.update(req.params.id, { name, role, proficiency, last_updated }, function (err) {
+  const { name, role, proficiency, skills, last_updated } = req.body; // <-- add skills here
+  employeeService.update(req.params.id, { name, role, proficiency, skills, last_updated }, function (err) {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ updated: this.changes });
   });
