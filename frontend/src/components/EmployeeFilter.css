@@ -1,0 +1,29 @@
+.employee-filter {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background: #f5f7fa;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.employee-filter input,
+.employee-filter select {
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1em;
+}
+.employee-filter button {
+  padding: 0.5em 1.2em;
+  border-radius: 6px;
+  border: none;
+  background: #646cff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.employee-filter button:hover {
+  background: #535bf2;
+}

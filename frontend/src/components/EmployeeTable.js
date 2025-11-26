@@ -1,3 +1,4 @@
+import './EmployeeTable.css';
 // frontend/src/components/EmployeeTable.js
 export function EmployeeTable({ employees, onEdit, onDelete, onBulkDelete }) {
   const table = document.createElement("table");

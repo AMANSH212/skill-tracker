@@ -1,0 +1,22 @@
+.notification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: #fff;
+  color: #333;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  font-size: 1.1em;
+  z-index: 2000;
+  opacity: 0.95;
+}
+.notification.success {
+  border-left: 6px solid #4caf50;
+}
+.notification.error {
+  border-left: 6px solid #f44336;
+}
+.notification.info {
+  border-left: 6px solid #2196f3;
+}

@@ -36,8 +36,8 @@ router.post("/", (req, res) => {
 
 // Update employee
 router.put("/:id", (req, res) => {
-  const { name, role, last_updated } = req.body;
-  employeeService.update(req.params.id, { name, role, last_updated }, function (err) {
+  const { name, role, proficiency, last_updated } = req.body;
+  employeeService.update(req.params.id, { name, role, proficiency, last_updated }, function (err) {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ updated: this.changes });
   });

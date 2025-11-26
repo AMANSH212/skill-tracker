@@ -1,0 +1,62 @@
+.employee-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.employee-table th, .employee-table td {
+  padding: 1rem;
+  text-align: left;
+}
+.employee-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #333;
+}
+.employee-table tr {
+  border-bottom: 1px solid #eee;
+}
+.employee-table tr:last-child {
+  border-bottom: none;
+}
+.employee-table td button {
+  margin-right: 0.5rem;
+  padding: 0.4em 1em;
+  border-radius: 6px;
+  border: none;
+  background: #646cff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.employee-table td button:hover {
+  background: #535bf2;
+}
+
+.employee-table-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+#add-employee-btn {
+  padding: 0.5em 1.2em;
+  border-radius: 6px;
+  border: none;
+  background: #646cff;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+#add-employee-btn:hover {
+  background: #535bf2;
+}
