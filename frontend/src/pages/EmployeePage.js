@@ -26,7 +26,7 @@ export async function EmployeePage(root) {
   // Filtering logic
   const filterKeyword = document.getElementById("filter-keyword");
   const filterProficiency = document.getElementById("filter-proficiency");
-  const filterRole = document.getElementById("filter-role");
+  const filterRole = document.getElementById("filter-role"); // Declare only ONCE here
   const filterBtn = document.getElementById("filter-btn");
   const clearBtn = document.getElementById("clear-filter-btn");
 
@@ -63,6 +63,33 @@ export async function EmployeePage(root) {
 
   // Render employee rows
   let employees = await api.getEmployees();
+
+  function updateRoleFilterOptions(employees) {
+    const filterRole = document.getElementById("filter-role");
+    if (!filterRole) return;
+    const currentValue = filterRole.value;
+    // Remove all options except "All Roles"
+    filterRole.innerHTML = '<option value="all">All Roles</option>';
+    const uniqueRoles = [...new Set(employees.map(emp => emp.role))];
+    uniqueRoles.forEach(role => {
+      const option = document.createElement("option");
+      option.value = role;
+      option.textContent = role;
+      filterRole.appendChild(option);
+    });
+    // Restore previous selection if possible
+    filterRole.value = currentValue;
+  }
+
+  // Populate roles in filter dynamically
+  const uniqueRoles = [...new Set(employees.map(emp => emp.role))];
+  uniqueRoles.forEach(role => {
+    const option = document.createElement("option");
+    option.value = role;
+    option.textContent = role;
+    filterRole.appendChild(option); // Use the already declared filterRole
+  });
+
   function renderTable(filteredEmployees) {
     const tbody = document.querySelector("#employee-table tbody");
     tbody.innerHTML = filteredEmployees.map(emp => `
@@ -91,6 +118,7 @@ export async function EmployeePage(root) {
         await api.deleteEmployee(emp.id);
         employees = await api.getEmployees();
         renderTable(employees);
+        updateRoleFilterOptions(employees); // update after delete
         showNotification("Employee deleted", "success");
       };
     });
@@ -158,12 +186,9 @@ export async function EmployeePage(root) {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
       const result = await api.createEmployee(data);
-      if (Array.isArray(result)) {
-        employees = result;
-      } else {
-        employees = await api.getEmployees();
-      }
-      renderTable(employees); // Use renderTable instead of tbody.innerHTML
+      employees = await api.getEmployees();
+      renderTable(employees);
+      updateRoleFilterOptions(employees); // update after add
       showNotification("Employee added", "success");
       modal.remove();
     };
@@ -184,7 +209,8 @@ export async function EmployeePage(root) {
       const data = Object.fromEntries(new FormData(form));
       await api.updateEmployee(emp.id, data);
       employees = await api.getEmployees();
-      renderTable(employees); // Use renderTable instead of tbody.innerHTML
+      renderTable(employees);
+      updateRoleFilterOptions(employees); // update after edit
       showNotification("Employee updated", "success");
       modal.remove();
     };
@@ -201,4 +227,7 @@ export async function EmployeePage(root) {
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 2000);
   }
+
+  // Initial population after fetching employees
+  updateRoleFilterOptions(employees);
 }
